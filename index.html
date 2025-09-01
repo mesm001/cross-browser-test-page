@@ -33,7 +33,7 @@
           <button type="submit" id="submitBtn">Submit</button>
         `);
       } else if (ua.includes("firefox")) {
-        // Firefox layout: fields side by side
+        // Firefox layout: fields side by side + date as picker
         document.write(`
           <div class="row">
             <div>
@@ -42,7 +42,7 @@
             </div>
             <div>
               <label for="date">Date:</label><br>
-              <input type="text" id="date" placeholder="MM/DD/YYYY" required>
+              <input type="date" id="date" required>
             </div>
           </div><br>
           <button form="testForm" id="submitBtn">Submit</button>
@@ -86,10 +86,16 @@
       // Try to get username by ID, fallback to name
       let nameField = document.getElementById('username') || document.getElementsByName('username')[0];
       const name = nameField ? nameField.value : "N/A";
-      const date = document.getElementById('date').value;
+      let dateVal = document.getElementById('date').value;
+
+      // If Firefox → convert YYYY-MM-DD → MM/DD/YYYY
+      if (navigator.userAgent.toLowerCase().includes("firefox") && dateVal.includes("-")) {
+        const [yyyy, mm, dd] = dateVal.split("-");
+        dateVal = `${mm}/${dd}/${yyyy}`;
+      }
 
       const row = document.createElement('tr');
-      row.innerHTML = `<td>${counter}</td><td>${name}</td><td>${date}</td>`;
+      row.innerHTML = `<td>${counter}</td><td>${name}</td><td>${dateVal}</td>`;
       tableBody.appendChild(row);
 
       counter++;
