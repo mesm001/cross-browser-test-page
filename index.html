@@ -2,27 +2,52 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Cross Browser Test Page</title>
+  <title>Cross-Browser Self-Healing Demo</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
     form { margin-bottom: 20px; }
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
     th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
     th { background: #f2f2f2; }
-    .browser-section { margin-top: 20px; padding: 10px; border: 1px dashed #666; }
+    .firefox-btn { margin-top: 15px; background: #ffcccc; }
+    .chrome-btn { background: #ccffcc; }
   </style>
 </head>
 <body>
-  <h1>Cross Browser Testing Demo Page</h1>
+  <h1>Cross-Browser Testing Demo Page</h1>
 
   <!-- Form Section -->
   <form id="testForm">
-    <label for="name">Name:</label>
-    <input type="text" id="name" required>
-    <label for="date">Date:</label>
-    <input type="date" id="date" required>
-    <button type="submit">Add to Table</button>
+    <label for="username">Name:</label>
+    <script>
+      const ua = navigator.userAgent.toLowerCase();
+      if (ua.includes("chrome") && !ua.includes("firefox")) {
+        // Chrome-specific input field
+        document.write('<input type="text" id="username" placeholder="Chrome Username Field" required><br><br>');
+        // Chrome-only date input
+        document.write('<label for="date">Date:</label><input type="date" id="date" required><br><br>');
+        // Submit button inside the form
+        document.write('<button type="submit" id="submitBtn" class="chrome-btn">Submit (Chrome)</button>');
+      } else if (ua.includes("firefox")) {
+        // Firefox-specific input field (uses name instead of id)
+        document.write('<input type="text" name="username" placeholder="Firefox Username Field" required><br><br>');
+        // Firefox treats date as text → different format
+        document.write('<label for="date">Date:</label><input type="text" id="date" placeholder="MM/DD/YYYY" required><br><br>');
+      } else {
+        // Other browsers
+        document.write('<input type="text" id="username" placeholder="Generic Username Field" required><br><br>');
+        document.write('<label for="date">Date:</label><input type="date" id="date" required><br><br>');
+        document.write('<button type="submit" id="submitBtn">Submit (Other)</button>');
+      }
+    </script>
   </form>
+
+  <!-- Firefox-only submit button (outside form) -->
+  <script>
+    if (navigator.userAgent.toLowerCase().includes("firefox")) {
+      document.write('<button form="testForm" id="submitBtn" class="firefox-btn">Submit (Firefox)</button>');
+    }
+  </script>
 
   <!-- Table Section -->
   <table id="dataTable">
@@ -36,32 +61,6 @@
     <tbody></tbody>
   </table>
 
-  <!-- Browser-specific differences -->
-  <div class="browser-section">
-    <h2>Browser-Specific Elements</h2>
-    <script>
-      const ua = navigator.userAgent.toLowerCase();
-
-      if (ua.includes("chrome") && !ua.includes("firefox")) {
-        // Chrome-only elements
-        document.write('<button id="chromeBtn">Chrome Only Button</button><br><br>');
-        document.write('<select id="chromeSelect"><option>Chrome Option 1</option><option>Option 2</option></select><br><br>');
-        document.write('<input type="text" id="username" placeholder="Chrome Username Field"><br><br>');
-        document.write('<div id="chrome-only">This section is visible only in Chrome</div>');
-      } else if (ua.includes("firefox")) {
-        // Firefox-only elements
-        document.write('<button id="firefoxBtn">Firefox Only Button</button><br><br>');
-        document.write('<input type="text" id="firefoxInput" placeholder="Firefox Input"><br><br>');
-        document.write('<input type="text" name="username" placeholder="Firefox Username Field"><br><br>');
-        document.write('<div id="firefox-only">This section is visible only in Firefox</div>');
-      } else {
-        // Other browsers fallback
-        document.write('<button id="genericBtn">Generic Browser Button</button>');
-        document.write('<div id="generic-only">This section is visible in other browsers</div>');
-      }
-    </script>
-  </div>
-
   <script>
     // Handle form submission to table
     const form = document.getElementById('testForm');
@@ -71,7 +70,9 @@
     form.addEventListener('submit', function (e) {
       e.preventDefault();
 
-      const name = document.getElementById('name').value;
+      // Try to get username by ID, fallback to name
+      let nameField = document.getElementById('username') || document.getElementsByName('username')[0];
+      const name = nameField ? nameField.value : "N/A";
       const date = document.getElementById('date').value;
 
       const row = document.createElement('tr');
