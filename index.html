@@ -8,20 +8,15 @@
     body { font-family: Arial, sans-serif; margin: 20px; }
     h1 { color: darkblue; }
     form { margin-bottom: 20px; }
-    label { display: block; margin-top: 10px; }
+    label { margin-top: 10px; }
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
     th, td { border: 1px solid #999; padding: 8px; text-align: left; }
     th { background: #eee; }
 
-    /* Default: Chrome → stacked layout */
+    /* Default Chrome layout (stacked) */
     #formFields { display: block; }
+    #formFields label { display: block; }
     #submitBtn { display: block; margin-top: 10px; }
-
-    /* Firefox → inline layout */
-    @-moz-document url-prefix() {
-      #formFields { display: flex; gap: 10px; align-items: center; }
-      #submitBtn { margin-top: 0; }
-    }
   </style>
 </head>
 <body>
@@ -35,9 +30,8 @@
 
       <label for="date">Date:</label>
       <input type="date" id="date" required>
-
-      <button type="submit" id="submitBtn">Submit</button>
     </div>
+    <button type="submit" id="submitBtn">Submit</button>
   </form>
 
   <h2>Submitted Data</h2>
@@ -56,12 +50,22 @@
     const ua = navigator.userAgent.toLowerCase();
     let serial = 1;
 
+    // Firefox: make Name & Date appear inline
+    if (ua.includes("firefox")) {
+      const formFields = document.getElementById("formFields");
+      formFields.style.display = "flex";
+      formFields.style.gap = "20px";
+      formFields.querySelectorAll("label").forEach(label => {
+        label.style.display = "block";
+      });
+    }
+
     document.getElementById("testForm").addEventListener("submit", function(e) {
       e.preventDefault();
       const name = document.getElementById("name").value;
       let date = document.getElementById("date").value;
 
-      // Firefox → convert yyyy-mm-dd to dd/mm/yyyy for the table
+      // Firefox → convert yyyy-mm-dd to dd/mm/yyyy for table
       if (ua.includes("firefox") && date.includes("-")) {
         const parts = date.split("-");
         date = `${parts[2]}/${parts[1]}/${parts[0]}`;
