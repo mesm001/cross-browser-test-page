@@ -9,8 +9,8 @@
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
     th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
     th { background: #f2f2f2; }
-    .firefox-btn { margin-top: 15px; background: #ffcccc; }
-    .chrome-btn { background: #ccffcc; }
+    .row { display: flex; gap: 10px; }
+    .row input { flex: 1; }
   </style>
 </head>
 <body>
@@ -18,36 +18,49 @@
 
   <!-- Form Section -->
   <form id="testForm">
-    <label for="username">Name:</label>
     <script>
       const ua = navigator.userAgent.toLowerCase();
+
       if (ua.includes("chrome") && !ua.includes("firefox")) {
-        // Chrome-specific input field
-        document.write('<input type="text" id="username" placeholder="Chrome Username Field" required><br><br>');
-        // Chrome-only date input
-        document.write('<label for="date">Date:</label><input type="date" id="date" required><br><br>');
-        // Submit button inside the form
-        document.write('<button type="submit" id="submitBtn" class="chrome-btn">Submit (Chrome)</button>');
+        // Chrome layout: fields stacked vertically
+        document.write(`
+          <label for="username">Name:</label><br>
+          <input type="text" id="username" placeholder="Chrome Username Field" required><br><br>
+          
+          <label for="date">Date:</label><br>
+          <input type="date" id="date" required><br><br>
+
+          <button type="submit" id="submitBtn">Submit</button>
+        `);
       } else if (ua.includes("firefox")) {
-        // Firefox-specific input field (uses name instead of id)
-        document.write('<input type="text" name="username" placeholder="Firefox Username Field" required><br><br>');
-        // Firefox treats date as text → different format
-        document.write('<label for="date">Date:</label><input type="text" id="date" placeholder="MM/DD/YYYY" required><br><br>');
+        // Firefox layout: fields side by side
+        document.write(`
+          <div class="row">
+            <div>
+              <label for="username">Name:</label><br>
+              <input type="text" name="username" placeholder="Firefox Username Field" required>
+            </div>
+            <div>
+              <label for="date">Date:</label><br>
+              <input type="text" id="date" placeholder="MM/DD/YYYY" required>
+            </div>
+          </div><br>
+          <button form="testForm" id="submitBtn">Submit</button>
+        `);
       } else {
         // Other browsers
-        document.write('<input type="text" id="username" placeholder="Generic Username Field" required><br><br>');
-        document.write('<label for="date">Date:</label><input type="date" id="date" required><br><br>');
-        document.write('<button type="submit" id="submitBtn">Submit (Other)</button>');
+        document.write(`
+          <label for="username">Name:</label><br>
+          <input type="text" id="username" placeholder="Generic Username Field" required><br><br>
+          
+          <label for="date">Date:</label><br>
+          <input type="date" id="date" required><br><br>
+
+          <button type="submit" id="submitBtn">Submit</button>
+        `);
       }
     </script>
   </form>
-
-  <!-- Firefox-only submit button (outside form) -->
-  <script>
-    if (navigator.userAgent.toLowerCase().includes("firefox")) {
-      document.write('<button form="testForm" id="submitBtn" class="firefox-btn">Submit (Firefox)</button>');
-    }
-  </script>
 
   <!-- Table Section -->
   <table id="dataTable">
