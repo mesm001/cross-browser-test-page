@@ -2,90 +2,45 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>opentext - Cross-Browser Testing Demo_Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Opentext Cross-Browser Testing Demo Page</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { color: darkblue; }
+    form { margin-bottom: 20px; }
+    label { display: block; margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #999; padding: 8px; text-align: left; }
+    th { background: #eee; }
 
-    h1 {
-      margin-top: 10px;
-      margin-bottom: 20px;
-    }
+    /* Default: Chrome → stacked layout */
+    #formFields { display: block; }
+    #submitBtn { display: block; margin-top: 10px; }
 
-    .logo {
-      max-width: 200px;
-      margin-bottom: 20px;
-      display: block;
-    }
-
-    /* Chrome defaults */
-    .form-container {
-      display: block;
-    }
-    .form-field {
-      margin-bottom: 15px;
-      display: block;
-    }
-    .logo {
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    /* Firefox overrides */
+    /* Firefox → inline layout */
     @-moz-document url-prefix() {
-      .form-container {
-        display: flex;
-        gap: 20px;
-        align-items: flex-end;
-      }
-      .form-field {
-        display: inline-block;
-        margin-bottom: 0;
-      }
-      .logo {
-        margin-left: 0;
-        margin-right: auto;
-      }
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    table, th, td {
-      border: 1px solid black;
-      padding: 8px;
+      #formFields { display: flex; gap: 10px; align-items: center; }
+      #submitBtn { margin-top: 0; }
     }
   </style>
 </head>
 <body>
-
-  <!-- OpenText Logo -->
-  <img src="OT_Image01.png" alt="OpenText Logo" class="logo">
-
+  <img src="OT_Image01.png" alt="OpenText" style="width:150px; display:block; margin-bottom:15px;">
   <h1>Cross-Browser Testing Demo Page</h1>
 
   <form id="testForm">
-    <div class="form-container">
-      <div class="form-field">
-        <label for="name">Name:</label><br>
-        <input type="text" id="name" required>
-      </div>
+    <div id="formFields">
+      <label for="name">Name:</label>
+      <input type="text" id="name" required>
 
-      <div class="form-field">
-        <label for="date">Date:</label><br>
-        <input type="date" id="date" required>
-      </div>
+      <label for="date">Date:</label>
+      <input type="date" id="date" required>
 
-      <div class="form-field">
-        <button type="submit" id="submitBtn">Submit Form</button>
-      </div>
+      <button type="submit" id="submitBtn">Submit</button>
     </div>
   </form>
 
+  <h2>Submitted Data</h2>
   <table id="dataTable">
     <thead>
       <tr>
@@ -94,42 +49,23 @@
         <th>Date</th>
       </tr>
     </thead>
-    <tbody>
-    </tbody>
+    <tbody></tbody>
   </table>
 
   <script>
     const ua = navigator.userAgent.toLowerCase();
-
-    // Firefox customizations
-    if (ua.includes("firefox")) {
-      // Change button text
-      document.getElementById("submitBtn").innerText = "Submit";
-
-      // Replace date input with text + clickable calendar
-      const dateInput = document.getElementById("date");
-      dateInput.type = "text";
-      dateInput.placeholder = "dd/mm/yyyy";
-      dateInput.addEventListener("focus", () => {
-        dateInput.type = "date";
-      });
-      dateInput.addEventListener("blur", () => {
-        if (dateInput.value) {
-          const parts = dateInput.value.split("-");
-          dateInput.type = "text";
-          dateInput.value = parts.reverse().join("/");
-        } else {
-          dateInput.type = "text";
-        }
-      });
-    }
-
-    // Handle form submission
     let serial = 1;
+
     document.getElementById("testForm").addEventListener("submit", function(e) {
       e.preventDefault();
       const name = document.getElementById("name").value;
-      const date = document.getElementById("date").value;
+      let date = document.getElementById("date").value;
+
+      // Firefox → convert yyyy-mm-dd to dd/mm/yyyy for the table
+      if (ua.includes("firefox") && date.includes("-")) {
+        const parts = date.split("-");
+        date = `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
 
       const row = document.createElement("tr");
       row.innerHTML = `<td>${serial++}</td><td>${name}</td><td>${date}</td>`;
@@ -138,6 +74,5 @@
       document.getElementById("testForm").reset();
     });
   </script>
-
 </body>
 </html>
