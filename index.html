@@ -3,15 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Opentext Cross-Browser Testing Demo Page</title>
+  <title>Cross-Browser Testing Demo Page</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    h1 { color: darkblue; }
-    form { margin-bottom: 20px; }
-    label { margin-top: 10px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #999; padding: 8px; text-align: left; }
-    th { background: #eee; }
+    body { 
+      font-family: Arial, sans-serif; 
+      margin: 20px; 
+      background: #f4f9ff; 
+    }
+    h1 { 
+      font-size: 22px; /* smaller heading */
+      color: #004080; 
+      background: linear-gradient(to right, #cce0ff, #e6f0ff); 
+      padding: 8px; 
+      border-radius: 8px; 
+      text-align: center;
+    }
+    h2 {
+      color: #003366;
+      border-bottom: 2px solid #99c2ff;
+      padding-bottom: 5px;
+      margin-top: 20px;
+    }
+    form { 
+      margin-bottom: 20px; 
+      background: #e6f2ff; 
+      padding: 15px; 
+      border-radius: 10px; 
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    label { 
+      margin-top: 10px; 
+      font-weight: bold;
+      color: #003366;
+    }
+    input[type="text"], input[type="date"] {
+      padding: 6px;
+      border: 1px solid #99b3e6;
+      border-radius: 5px;
+      background: #ffffff;
+    }
+    button { 
+      background: #004080; 
+      color: white; 
+      border: none; 
+      padding: 8px 14px; 
+      border-radius: 6px; 
+      cursor: pointer; 
+      font-weight: bold;
+    }
+    button:hover {
+      background: #0066cc;
+    }
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      margin-top: 20px; 
+      background: #ffffff; 
+      border-radius: 6px; 
+      overflow: hidden; 
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    th, td { 
+      border: 1px solid #99c2ff; 
+      padding: 8px; 
+      text-align: left; 
+    }
+    th { 
+      background: #cce0ff; 
+      color: #003366;
+    }
+    tr:nth-child(even) {
+      background: #f2f7ff;
+    }
 
     /* Default Chrome layout (stacked) */
     #formFields { display: block; }
@@ -20,7 +83,10 @@
   </style>
 </head>
 <body>
-  <img src="OT_Image01.png" alt="OpenText" style="width:150px; display:block; margin-bottom:15px;">
+  <!-- Bigger image -->
+  <img src="OT_Image01.png" alt="OpenText" style="width:220px; display:block; margin: 0 auto 15px auto;">
+  
+  <!-- Smaller heading -->
   <h1>Cross-Browser Testing Demo Page</h1>
 
   <form id="testForm">
