@@ -2,94 +2,71 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Cross Browser Self-Healing Demo</title>
+  <title>Cross Browser Test Page</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    section {
-      margin-bottom: 20px;
-      padding: 10px;
-      border: 1px solid #ccc;
-    }
-
-    /* Works in Chrome/Edge/Safari, ignored in older Firefox */
-    section:has(button) {
-      border: 3px solid red;
-    }
-
-    #nav {
-      margin: 20px 0;
-    }
-
-    #logo {
-      width: 200px;
-      margin: 10px 0;
-    }
-
-    .page {
-      display: none;
-    }
-
-    .page.active {
-      display: block;
-    }
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #f2f2f2; }
+    .form-container { margin-bottom: 20px; }
   </style>
 </head>
 <body>
-  <h1>Cross Browser Test Page</h1>
 
-  <!-- Navigation -->
-  <div id="nav">
-    <button onclick="showPage('home')">Home</button>
-    <button onclick="showPage('form')">Form</button>
-    <button onclick="showPage('about')">About</button>
-  </div>
+  <h2>Cross Browser Test Form</h2>
 
-  <!-- Page: Home -->
-  <div id="home" class="page active">
-    <h2>Home</h2>
-    <img id="logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/OpenText_logo.svg/320px-OpenText_logo.svg.png" alt="OpenText Logo">
-    <p>Welcome to the cross-browser demo page.</p>
-  </div>
-
-  <!-- Page: Form -->
-  <div id="form" class="page">
-    <h2>Form Demo</h2>
-    <section>
+  <div class="form-container">
+    <form id="testForm">
       <label for="name">Name:</label>
-      <input type="text" id="name" placeholder="Enter your name">
+      <input type="text" id="name" name="name" required>
       <br><br>
-
-      <label for="dateField">Enter Date:</label>
-      <input type="date" id="dateField">
+      
+      <label for="date">Date:</label>
+      <input type="date" id="date" name="date" required>
       <br><br>
-
-      <button id="saveBtn">Save</button>
-    </section>
+      
+      <button type="submit">Submit</button>
+    </form>
   </div>
 
-  <!-- Page: About -->
-  <div id="about" class="page">
-    <h2>About</h2>
-    <p>This page is designed to behave differently in different browsers:</p>
-    <ul>
-      <li><code>:has()</code> CSS works in Chrome/Edge/Safari → section border is <b>red</b></li>
-      <li>Firefox (older) ignores <code>:has()</code> → border is <b>gray</b></li>
-      <li><code>&lt;input type="date"&gt;</code> shows a date picker in Chrome/Edge/Safari → plain text box in Firefox</li>
-    </ul>
-  </div>
+  <h3>Submitted Records</h3>
+  <table id="recordsTable">
+    <thead>
+      <tr>
+        <th>Serial No.</th>
+        <th>Name</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- New rows will be added here -->
+    </tbody>
+  </table>
 
   <script>
-    function showPage(id) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-    }
+    let serial = 1;
+    const form = document.getElementById("testForm");
+    const tableBody = document.querySelector("#recordsTable tbody");
 
-    document.getElementById("saveBtn").addEventListener("click", () => {
-      alert("Form submitted! (Try in different browsers)");
+    form.addEventListener("submit", function(e) {
+      e.preventDefault(); // prevent page reload
+
+      const name = document.getElementById("name").value;
+      const date = document.getElementById("date").value;
+
+      // Add row to table
+      const newRow = document.createElement("tr");
+      newRow.innerHTML = `
+        <td>${serial++}</td>
+        <td>${name}</td>
+        <td>${date}</td>
+      `;
+      tableBody.appendChild(newRow);
+
+      // Reset form
+      form.reset();
     });
   </script>
+
 </body>
 </html>
