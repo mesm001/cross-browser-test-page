@@ -2,105 +2,142 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Cross-Browser Self-Healing Demo</title>
+  <title>Cross-Browser Testing Demo</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    form { margin-bottom: 20px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    th { background: #f2f2f2; }
-    .row { display: flex; gap: 10px; }
-    .row input { flex: 1; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h1 {
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+
+    .logo {
+      max-width: 200px;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    /* Chrome defaults */
+    .form-container {
+      display: block;
+    }
+    .form-field {
+      margin-bottom: 15px;
+      display: block;
+    }
+    .logo {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Firefox overrides */
+    @-moz-document url-prefix() {
+      .form-container {
+        display: flex;
+        gap: 20px;
+        align-items: flex-end;
+      }
+      .form-field {
+        display: inline-block;
+        margin-bottom: 0;
+      }
+      .logo {
+        margin-left: 0;
+        margin-right: auto;
+      }
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table, th, td {
+      border: 1px solid black;
+      padding: 8px;
+    }
   </style>
 </head>
 <body>
+
+  <!-- OpenText Logo -->
+  <img src="OT_Image01.png" alt="OpenText Logo" class="logo">
+
   <h1>Cross-Browser Testing Demo Page</h1>
 
-  <!-- Form Section -->
   <form id="testForm">
-    <script>
-      const ua = navigator.userAgent.toLowerCase();
+    <div class="form-container">
+      <div class="form-field">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" required>
+      </div>
 
-      if (ua.includes("chrome") && !ua.includes("firefox")) {
-        // Chrome layout: fields stacked vertically
-        document.write(`
-          <label for="username">Name:</label><br>
-          <input type="text" id="username" placeholder="Chrome Username Field" required><br><br>
-          
-          <label for="date">Date:</label><br>
-          <input type="date" id="date" required><br><br>
+      <div class="form-field">
+        <label for="date">Date:</label><br>
+        <input type="date" id="date" required>
+      </div>
 
-          <button type="submit" id="submitBtn">Submit</button>
-        `);
-      } else if (ua.includes("firefox")) {
-        // Firefox layout: fields side by side + date as picker
-        document.write(`
-          <div class="row">
-            <div>
-              <label for="username">Name:</label><br>
-              <input type="text" name="username" placeholder="Firefox Username Field" required>
-            </div>
-            <div>
-              <label for="date">Date:</label><br>
-              <input type="date" id="date" required>
-            </div>
-          </div><br>
-          <button form="testForm" id="submitBtn">Submit</button>
-        `);
-      } else {
-        // Other browsers
-        document.write(`
-          <label for="username">Name:</label><br>
-          <input type="text" id="username" placeholder="Generic Username Field" required><br><br>
-          
-          <label for="date">Date:</label><br>
-          <input type="date" id="date" required><br><br>
-
-          <button type="submit" id="submitBtn">Submit</button>
-        `);
-      }
-    </script>
+      <div class="form-field">
+        <button type="submit" id="submitBtn">Submit Form</button>
+      </div>
+    </div>
   </form>
 
-  <!-- Table Section -->
   <table id="dataTable">
     <thead>
       <tr>
-        <th>S.No</th>
+        <th>Serial No.</th>
         <th>Name</th>
         <th>Date</th>
       </tr>
     </thead>
-    <tbody></tbody>
+    <tbody>
+    </tbody>
   </table>
 
   <script>
-    // Handle form submission to table
-    const form = document.getElementById('testForm');
-    const tableBody = document.querySelector('#dataTable tbody');
-    let counter = 1;
+    const ua = navigator.userAgent.toLowerCase();
 
-    form.addEventListener('submit', function (e) {
+    // Firefox customizations
+    if (ua.includes("firefox")) {
+      // Change button text
+      document.getElementById("submitBtn").innerText = "Submit";
+
+      // Replace date input with text + clickable calendar
+      const dateInput = document.getElementById("date");
+      dateInput.type = "text";
+      dateInput.placeholder = "dd/mm/yyyy";
+      dateInput.addEventListener("focus", () => {
+        dateInput.type = "date";
+      });
+      dateInput.addEventListener("blur", () => {
+        if (dateInput.value) {
+          const parts = dateInput.value.split("-");
+          dateInput.type = "text";
+          dateInput.value = parts.reverse().join("/");
+        } else {
+          dateInput.type = "text";
+        }
+      });
+    }
+
+    // Handle form submission
+    let serial = 1;
+    document.getElementById("testForm").addEventListener("submit", function(e) {
       e.preventDefault();
+      const name = document.getElementById("name").value;
+      const date = document.getElementById("date").value;
 
-      // Try to get username by ID, fallback to name
-      let nameField = document.getElementById('username') || document.getElementsByName('username')[0];
-      const name = nameField ? nameField.value : "N/A";
-      let dateVal = document.getElementById('date').value;
+      const row = document.createElement("tr");
+      row.innerHTML = `<td>${serial++}</td><td>${name}</td><td>${date}</td>`;
+      document.querySelector("#dataTable tbody").appendChild(row);
 
-      // If Firefox → convert YYYY-MM-DD → MM/DD/YYYY
-      if (navigator.userAgent.toLowerCase().includes("firefox") && dateVal.includes("-")) {
-        const [yyyy, mm, dd] = dateVal.split("-");
-        dateVal = `${mm}/${dd}/${yyyy}`;
-      }
-
-      const row = document.createElement('tr');
-      row.innerHTML = `<td>${counter}</td><td>${name}</td><td>${dateVal}</td>`;
-      tableBody.appendChild(row);
-
-      counter++;
-      form.reset();
+      document.getElementById("testForm").reset();
     });
   </script>
+
 </body>
 </html>
